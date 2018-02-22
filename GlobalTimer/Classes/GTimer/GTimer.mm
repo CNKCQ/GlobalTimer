@@ -85,6 +85,7 @@ _Pragma("clang diagnostic pop")
     if (self) {
         pthread_mutex_init(&_lock, NULL);
         self.defaultTimeInterval = 1;
+        self.indexInterval = 0;
         self.events = [NSMutableArray array];
         self.privateSerialQueue = nil;
         NSString *privateQueueName = [NSString stringWithFormat:@"com.globaltimer.%p", self];
@@ -167,19 +168,33 @@ _Pragma("clang diagnostic pop")
 }
 
 - (void)updateDefaultTimeIntervalIfNeeded {
-    NSArray<GEvent *> *tempEvents = [self.events copy];
-    int count = (int)[tempEvents count];
-    int intervals[count];
-    for (int i = 0; i < tempEvents.count; i++) {
-        intervals[i] = (int)tempEvents[i].interval;
-    }
-    int gcdInterval = findGCD(intervals, (int)(sizeof(intervals)/sizeof(intervals[0])));
+    int gcdInterval = [self gcdInterval];
     if (self.defaultTimeInterval != gcdInterval) {
         pthread_mutex_lock(&_lock);
         self.defaultTimeInterval = gcdInterval;
         [self resetTimer];
         pthread_mutex_unlock(&_lock);
     }
+}
+
+- (int)gcdInterval {
+    NSArray<GEvent *> *tempEvents = [self.events copy];
+    int count = (int)[tempEvents count];
+    int intervals[count];
+    for (int i = 0; i < tempEvents.count; i++) {
+        intervals[i] = (int)tempEvents[i].interval;
+    }
+    return findGCD(intervals, (int)(sizeof(intervals)/sizeof(intervals[0])));
+}
+
+- (int)lcmInterval {
+    NSArray<GEvent *> *tempEvents = [self.events copy];
+    int count = (int)[tempEvents count];
+    int intervals[count];
+    for (int i = 0; i < tempEvents.count; i++) {
+        intervals[i] = (int)tempEvents[i].interval;
+    }
+    return findLCM(intervals, (int)(sizeof(intervals)/sizeof(intervals[0])));
 }
 
 - (void)resetTimer
@@ -223,6 +238,9 @@ _Pragma("clang diagnostic pop")
                 event.block(event.userinfo);
             }
         }];
+        if (self.indexInterval > [self lcmInterval]) {
+            self.indexInterval = (int)self.indexInterval % [self lcmInterval];
+        }
     }
 }
 
