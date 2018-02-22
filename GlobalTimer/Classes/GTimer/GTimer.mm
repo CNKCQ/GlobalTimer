@@ -170,7 +170,7 @@ _Pragma("clang diagnostic pop")
     NSArray<GEvent *> *tempEvents = [self.events copy];
     int count = (int)[tempEvents count];
     int intervals[count];
-    for (int i = 0; i < self.events.count; i++) {
+    for (int i = 0; i < tempEvents.count; i++) {
         intervals[i] = (int)tempEvents[i].interval;
     }
     int gcdInterval = findGCD(intervals, (int)(sizeof(intervals)/sizeof(intervals[0])));
