@@ -184,7 +184,7 @@ _Pragma("clang diagnostic pop")
     for (int i = 0; i < tempEvents.count; i++) {
         intervals[i] = (int)tempEvents[i].interval;
     }
-    return findGCD(intervals, (int)(sizeof(intervals)/sizeof(intervals[0])));
+    return findGCD(intervals, count);
 }
 
 - (int)lcmInterval {
@@ -194,7 +194,7 @@ _Pragma("clang diagnostic pop")
     for (int i = 0; i < tempEvents.count; i++) {
         intervals[i] = (int)tempEvents[i].interval;
     }
-    return findLCM(intervals, (int)(sizeof(intervals)/sizeof(intervals[0])));
+    return findLCM(intervals, count);
 }
 
 - (void)resetTimer
@@ -238,6 +238,7 @@ _Pragma("clang diagnostic pop")
                 event.block(event.userinfo);
             }
         }];
+        NSLog(@"%d--------%d", [self gcdInterval], [self lcmInterval]);
         if (self.indexInterval > [self lcmInterval]) {
             self.indexInterval = (int)self.indexInterval % [self lcmInterval];
         }

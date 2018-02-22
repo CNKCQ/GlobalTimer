@@ -30,7 +30,7 @@
     [[GTimer shared] scheduledWith:@"dog" timeInterval:6 repeat:YES block:^(NSDictionary *userinfo) {
         NSLog(@"🐶%@", userinfo[@"dog"]);
     } userinfo:@{@"dog": @"旺财"}];
-    [[GTimer shared] scheduledWith:@"fourth" timeInterval:2 repeat:YES block:^(NSDictionary *userinfo) {
+    [[GTimer shared] scheduledWith:@"fourth" timeInterval:3 repeat:YES block:^(NSDictionary *userinfo) {
         NSLog(@"🐱%@", userinfo[@"cat"]);
     } userinfo:@{@"cat": @"咪咪"}];
 }
