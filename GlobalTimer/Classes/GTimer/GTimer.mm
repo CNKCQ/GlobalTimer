@@ -31,6 +31,9 @@ _Pragma("clang diagnostic ignored \"-Wshadow\"") \
 __strong typeof(var) var = gtweak_##var; \
 _Pragma("clang diagnostic pop")
 
+#define LOCK(...) dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER); \
+__VA_ARGS__; \
+dispatch_semaphore_signal(_lock);
 
 @interface GTimer()
 {
@@ -58,7 +61,7 @@ _Pragma("clang diagnostic pop")
 
 
 @implementation GTimer {
-    pthread_mutex_t _lock;
+    dispatch_semaphore_t _lock;
 }
 
 @synthesize tolerance = _tolerance;
@@ -83,7 +86,7 @@ _Pragma("clang diagnostic pop")
 
 - (void)setup {
     if (self) {
-        pthread_mutex_init(&_lock, NULL);
+        _lock = dispatch_semaphore_create(1);
         self.defaultTimeInterval = 1;
         self.indexInterval = 0;
         self.events = [NSMutableArray array];
@@ -113,9 +116,7 @@ _Pragma("clang diagnostic pop")
     event.block = block;
     event.userinfo = userinfo;
     event.repeat = repeat;
-    pthread_mutex_lock(&_lock);
-    [self.events addObject:event];
-    pthread_mutex_unlock(&_lock);
+    LOCK([self.events addObject:event]);
     [self updateDefaultTimeIntervalIfNeeded];
 }
 
@@ -134,46 +135,47 @@ _Pragma("clang diagnostic pop")
 
 
 - (void)activeEventWith:(NSString *)identifirer {
-    pthread_mutex_lock(&_lock);
-    NSArray<GEvent *> *tempEvents = [self.events copy];
-    for (GEvent *event in tempEvents) {
-        if ([event.identifirer isEqualToString:identifirer]) {
-            event.isActive = YES;
-        }
-    }
-    pthread_mutex_unlock(&_lock);
+    LOCK(
+         NSArray<GEvent *> *tempEvents = [self.events copy];
+         for (GEvent *event in tempEvents) {
+             if ([event.identifirer isEqualToString:identifirer]) {
+                 event.isActive = YES;
+             }
+         }
+    );
 }
 
 - (void)pauseEventWith:(NSString *)identifirer {
-    pthread_mutex_lock(&_lock);
-    NSArray<GEvent *> *tempEvents = [self.events copy];
-    for (GEvent *event in tempEvents) {
-        if ([event.identifirer isEqualToString:identifirer]) {
-            event.isActive = NO;
-        }
-    }
-    pthread_mutex_unlock(&_lock);
+    
+    LOCK(
+         NSArray<GEvent *> *tempEvents = [self.events copy];
+         for (GEvent *event in tempEvents) {
+             if ([event.identifirer isEqualToString:identifirer]) {
+                 event.isActive = NO;
+             }
+         }
+    );
 }
 
 - (void)removeEventWith:(NSString *)identifirer {
-    pthread_mutex_lock(&_lock);
-    NSArray<GEvent *> *tempEvents = [self.events copy];
-    for (GEvent *event in tempEvents) {
-        if ([event.identifirer isEqualToString:identifirer]) {
-            [self.events removeObject:event];
-        }
-    }
-    pthread_mutex_unlock(&_lock);
+    LOCK(
+         NSArray<GEvent *> *tempEvents = [self.events copy];
+         for (GEvent *event in tempEvents) {
+             if ([event.identifirer isEqualToString:identifirer]) {
+                 [self.events removeObject:event];
+             }
+         }
+    );
     [self updateDefaultTimeIntervalIfNeeded];
 }
 
 - (void)updateDefaultTimeIntervalIfNeeded {
     int gcdInterval = [self gcdInterval];
     if (self.defaultTimeInterval != gcdInterval) {
-        pthread_mutex_lock(&_lock);
-        self.defaultTimeInterval = gcdInterval;
-        [self resetTimer];
-        pthread_mutex_unlock(&_lock);
+        LOCK(
+             self.defaultTimeInterval = gcdInterval;
+             [self resetTimer];
+        );
     }
 }
 
@@ -227,10 +229,7 @@ _Pragma("clang diagnostic pop")
         return;
     }
     @autoreleasepool {
-        pthread_mutex_lock(&_lock);
-        self.indexInterval += self.defaultTimeInterval;
-        pthread_mutex_unlock(&_lock);
-        NSArray<GEvent *> *tempEvents = [self.events copy];
+        LOCK(self.indexInterval += self.defaultTimeInterval;);        NSArray<GEvent *> *tempEvents = [self.events copy];
         gtweakify(self);
         [tempEvents enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(GEvent * _Nonnull event, NSUInteger idx, BOOL * _Nonnull stop) {
             gtstrongify(self);
@@ -238,9 +237,8 @@ _Pragma("clang diagnostic pop")
                 event.block(event.userinfo);
             }
         }];
-        NSLog(@"%d--------%d", [self gcdInterval], [self lcmInterval]);
         if (self.indexInterval > [self lcmInterval]) {
-            self.indexInterval = (int)self.indexInterval % [self lcmInterval];
+            LOCK(self.indexInterval = (int)self.indexInterval % [self lcmInterval];);
         }
     }
 }

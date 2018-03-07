@@ -30,9 +30,11 @@
     [[GTimer shared] scheduledWith:@"dog" timeInterval:6 repeat:YES block:^(NSDictionary *userinfo) {
         NSLog(@"🐶%@", userinfo[@"dog"]);
     } userinfo:@{@"dog": @"旺财"}];
-    [[GTimer shared] scheduledWith:@"fourth" timeInterval:3 repeat:YES block:^(NSDictionary *userinfo) {
-        NSLog(@"🐱%@", userinfo[@"cat"]);
-    } userinfo:@{@"cat": @"咪咪"}];
+    for (int i = 1; i < 10000; i++) {
+        [[GTimer shared] scheduledWith:[NSString stringWithFormat:@"fourth%d", i] timeInterval:2 repeat:YES block:^(NSDictionary *userinfo) {
+            NSLog(@"🐱%@", userinfo[@"cat"]);
+        } userinfo:@{@"cat": @"咪咪"}];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
