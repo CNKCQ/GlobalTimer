@@ -146,7 +146,6 @@ dispatch_semaphore_signal(_lock);
 }
 
 - (void)pauseEventWith:(NSString *)identifirer {
-    
     LOCK(
          NSArray<GEvent *> *tempEvents = [self.events copy];
          for (GEvent *event in tempEvents) {

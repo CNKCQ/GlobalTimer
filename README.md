@@ -34,7 +34,7 @@ pod 'GlobalTimer'
 
 ## Api
 ```Objective-C
-+ (instancetype _Nonnull )shard;
++ (instancetype _Nonnull )shared;
 
 - (void)scheduledWith: (NSString  * _Nonnull )identifirer timeInterval: (NSTimeInterval)interval repeat:(BOOL)repeat block:(GTBlock _Nonnull )block userinfo:(NSDictionary * _Nullable)userinfo;
 
@@ -52,27 +52,27 @@ pod 'GlobalTimer'
 ## :book: Usage
 
 ```Objective-C
-    [[GTimer shard] scheduledWith:@"first" timeInterval:2 repeat:YES block:^(NSDictionary *userinfo) {
+    [[GTimer shared] scheduledWith:@"first" timeInterval:2 repeat:YES block:^(NSDictionary *userinfo) {
         NSLog(@"🇺🇸%@", userinfo[@"test"]);
     } userinfo:@{@"test": @"ok"}];
     
-    [[GTimer shard] scheduledWith:@"second" timeInterval:5 repeat:YES block:^(NSDictionary *userinfo) {
+    [[GTimer shared] scheduledWith:@"second" timeInterval:5 repeat:YES block:^(NSDictionary *userinfo) {
         NSLog(@"🌺%@", userinfo[@"cnkcq"]);
     } userinfo:@{@"cnkcq": @"king"}];
-    [[GTimer shard] scheduledWith:@"dog" timeInterval:5 repeat:YES block:^(NSDictionary *userinfo) {
+    [[GTimer shared] scheduledWith:@"dog" timeInterval:5 repeat:YES block:^(NSDictionary *userinfo) {
         NSLog(@"🐶%@", userinfo[@"dog"]);
     } userinfo:@{@"dog": @"旺财"}];
-    [[GTimer shard] scheduledWith:@"fourth" timeInterval:10 repeat:YES block:^(NSDictionary *userinfo) {
+    [[GTimer shared] scheduledWith:@"fourth" timeInterval:10 repeat:YES block:^(NSDictionary *userinfo) {
         NSLog(@"🐱%@", userinfo[@"cat"]);
     } userinfo:@{@"cat": @"咪咪"}];
 
 ```
 
 ```Objective-C
-    [[GTimer shard] pauseEventWith:@"dog"];
-        NSLog(@"%@", [[GTimer shard] eventList]);
-    [[GTimer shard] activeEventWith:@"dog"];
-    [[GTimer shard] removeEventWith:@"fourth"];
+    [[GTimer shared] pauseEventWith:@"dog"];
+        NSLog(@"%@", [[GTimer shared] eventList]);
+    [[GTimer shared] activeEventWith:@"dog"];
+    [[GTimer shared] removeEventWith:@"fourth"];
 ```
 ## Reprensent
 ![ti](https://user-images.githubusercontent.com/8440220/35437059-c17cdb56-02cb-11e8-9a3c-b3a5cec90be8.jpg)
