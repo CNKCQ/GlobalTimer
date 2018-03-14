@@ -93,7 +93,6 @@ dispatch_semaphore_signal(_lock);
         self.privateSerialQueue = nil;
         NSString *privateQueueName = [NSString stringWithFormat:@"com.globaltimer.%p", self];
         self.privateSerialQueue = dispatch_queue_create([privateQueueName cStringUsingEncoding:NSASCIIStringEncoding], DISPATCH_QUEUE_CONCURRENT);
-        dispatch_set_target_queue(self.privateSerialQueue, nil);
         self.timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER,
                                             0,
                                             0,
