@@ -9,7 +9,6 @@
 #import "GEvent.h"
 #import <libkern/OSAtomic.h>
 #import <pthread.h>
-#import "GCD.hpp"
 
 #if !__has_feature(objc_arc)
 #error GTimer is ARC only. Either turn on ARC for the project or use -fobjc-arc flag
@@ -31,9 +30,47 @@ _Pragma("clang diagnostic ignored \"-Wshadow\"") \
 __strong typeof(var) var = gtweak_##var; \
 _Pragma("clang diagnostic pop")
 
-#define LOCK(...) dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER); \
-__VA_ARGS__; \
-dispatch_semaphore_signal(_lock);
+#define LOCK(...)  do {\
+                        dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);\
+                        __VA_ARGS__;\
+                        dispatch_semaphore_signal(_lock);\
+                      } while (0);
+
+// Function to return gcd of a and b
+NSTimeInterval gcd(NSTimeInterval a, NSTimeInterval b)
+{
+    if (a == 0)
+        return b;
+    return gcd(fmod(b, a), a);
+}
+
+// Function to find gcd of array of
+// numbers
+NS_INLINE NSTimeInterval findGCD(NSTimeInterval arr[], int n)
+{
+    int result = arr[0];
+    for (int i=1; i<n; i++)
+        result = gcd(arr[i], result);
+    return result;
+}
+
+// Function to return gcd of a and b
+NSTimeInterval lcm(NSTimeInterval a, NSTimeInterval b)
+{
+    return a*b/gcd(fmod(b, a), a);
+}
+
+
+// Function to find lcm of array of
+// numbers
+NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
+{
+    int result = arr[0];
+    for (int i=1; i<n; i++)
+        result = lcm(arr[i], result);
+    return result;
+}
+
 
 @interface GTimer()
 {
@@ -49,7 +86,7 @@ dispatch_semaphore_signal(_lock);
 
 @property (nonatomic, assign) BOOL repeats;
 
-@property (nonatomic, gt_gcd_property_qualifier) dispatch_queue_t privateSerialQueue;
+@property (nonatomic, gt_gcd_property_qualifier) dispatch_queue_t privateConcurrentQueue;
 
 @property (nonatomic, gt_gcd_property_qualifier) dispatch_source_t timer;
 
@@ -90,20 +127,19 @@ dispatch_semaphore_signal(_lock);
         self.defaultTimeInterval = 1;
         self.indexInterval = 0;
         self.events = [NSMutableArray array];
-        self.privateSerialQueue = nil;
+        self.privateConcurrentQueue = nil;
         NSString *privateQueueName = [NSString stringWithFormat:@"com.globaltimer.%p", self];
-        self.privateSerialQueue = dispatch_queue_create([privateQueueName cStringUsingEncoding:NSASCIIStringEncoding], DISPATCH_QUEUE_CONCURRENT);
+        self.privateConcurrentQueue = dispatch_queue_create([privateQueueName cStringUsingEncoding:NSASCIIStringEncoding], DISPATCH_QUEUE_CONCURRENT);
         self.timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER,
                                             0,
                                             0,
-                                            self.privateSerialQueue);
+                                            self.privateConcurrentQueue);
         [self schedule];
-        
     }
 }
 
 - (void)scheduledWith: (NSString *)identifirer timeInterval: (NSTimeInterval)interval repeat:(BOOL)repeat block:(GTBlock)block userinfo:(NSDictionary *)userinfo {
-    dispatch_async(self.privateSerialQueue, ^{
+    dispatch_async(self.privateConcurrentQueue, ^{
         block(userinfo);
     });
     if (!repeat) {
@@ -168,7 +204,7 @@ dispatch_semaphore_signal(_lock);
 }
 
 - (void)updateDefaultTimeIntervalIfNeeded {
-    int gcdInterval = [self gcdInterval];
+    NSTimeInterval gcdInterval = [self gcdInterval];
     if (self.defaultTimeInterval != gcdInterval) {
         LOCK(
              self.defaultTimeInterval = gcdInterval;
@@ -177,22 +213,22 @@ dispatch_semaphore_signal(_lock);
     }
 }
 
-- (int)gcdInterval {
+- (NSTimeInterval)gcdInterval {
     NSArray<GEvent *> *tempEvents = [self.events copy];
     int count = (int)[tempEvents count];
-    int intervals[count];
+    NSTimeInterval intervals[count];
     for (int i = 0; i < tempEvents.count; i++) {
-        intervals[i] = (int)tempEvents[i].interval;
+        intervals[i] = tempEvents[i].interval;
     }
     return findGCD(intervals, count);
 }
 
-- (int)lcmInterval {
+- (NSTimeInterval)lcmInterval {
     NSArray<GEvent *> *tempEvents = [self.events copy];
     int count = (int)[tempEvents count];
-    int intervals[count];
+    NSTimeInterval intervals[count];
     for (int i = 0; i < tempEvents.count; i++) {
-        intervals[i] = (int)tempEvents[i].interval;
+        intervals[i] = tempEvents[i].interval;
     }
     return findLCM(intervals, count);
 }
@@ -231,12 +267,12 @@ dispatch_semaphore_signal(_lock);
         gtweakify(self);
         [tempEvents enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(GEvent * _Nonnull event, NSUInteger idx, BOOL * _Nonnull stop) {
             gtstrongify(self);
-            if ((NSInteger)(self.indexInterval - event.creatAt) % (NSInteger)event.interval == 0 && event.isActive == YES) {
+            if (fmod(self.indexInterval - event.creatAt, event.interval) == 0.0 && event.isActive == YES) {
                 event.block(event.userinfo);
             }
         }];
         if (self.indexInterval > [self lcmInterval]) {
-            LOCK(self.indexInterval = (int)self.indexInterval % [self lcmInterval];);
+            LOCK(self.indexInterval = fmod(self.indexInterval, [self lcmInterval]));
         }
     }
 }
@@ -247,7 +283,7 @@ dispatch_semaphore_signal(_lock);
     if (!OSAtomicTestAndSetBarrier(7, &_timerFlags.timerIsInvalidated))
     {
         dispatch_source_t timer = self.timer;
-        dispatch_async(self.privateSerialQueue, ^{
+        dispatch_async(self.privateConcurrentQueue, ^{
             dispatch_source_cancel(timer);
             gt_release_gcd_object(timer);
         });
@@ -268,4 +304,3 @@ dispatch_semaphore_signal(_lock);
 }
 
 @end
-

@@ -18,11 +18,9 @@
 		8AF2D6500E1E7517378B6B598CA11817 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
 		99045166BF63C710F28A74849826D37C /* Pods-GlobalTimer_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 55F8648EB7C4549EE43F8238DCB394EB /* Pods-GlobalTimer_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A04799B67E8B8219BCEF58CEFE29A368 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
-		AACFEF23202095FC00C0113F /* GCD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACFEF21202095FC00C0113F /* GCD.cpp */; };
-		AACFEF24202095FC00C0113F /* GCD.hpp in Headers */ = {isa = PBXBuildFile; fileRef = AACFEF22202095FC00C0113F /* GCD.hpp */; };
 		B0C7BB22E13AB442A0A9D5C0B78EB9D1 /* Pods-GlobalTimer_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = CB2D15A6CDD781E453929537CE3DDF10 /* Pods-GlobalTimer_Example-dummy.m */; };
 		B3D526C067514305A96D1713F072AADC /* GlobalTimer-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = EE4E012DC467460889128F86FAB58CCD /* GlobalTimer-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		CACAC14F4B50A388C1403A30E90F1574 /* GTimer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C16F8C3256D319567C9AE8E76C84BE5D /* GTimer.mm */; };
+		CACAC14F4B50A388C1403A30E90F1574 /* GTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = C16F8C3256D319567C9AE8E76C84BE5D /* GTimer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,12 +57,10 @@
 		99626ED1AE6E33B115A70E0C20D48A4A /* Pods_GlobalTimer_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GlobalTimer_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B36F0564162502E7E0E9EE822AC1FF9 /* Pods-GlobalTimer_Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-GlobalTimer_Tests.modulemap"; sourceTree = "<group>"; };
 		9B4C542980A9A27DAA16DF45CBB8637A /* Pods_GlobalTimer_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GlobalTimer_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		AACFEF21202095FC00C0113F /* GCD.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GCD.cpp; sourceTree = "<group>"; };
-		AACFEF22202095FC00C0113F /* GCD.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GCD.hpp; sourceTree = "<group>"; };
 		ACE5C7A277D95237B6EDFD3881347197 /* Pods-GlobalTimer_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-GlobalTimer_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		B326B5AE3536F50D4335ACC7372D07C3 /* Pods-GlobalTimer_Example-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-GlobalTimer_Example-resources.sh"; sourceTree = "<group>"; };
 		B84F46D793A18A966E81822E2DB1DEBA /* Pods-GlobalTimer_Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-GlobalTimer_Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
-		C16F8C3256D319567C9AE8E76C84BE5D /* GTimer.mm */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.objcpp; path = GTimer.mm; sourceTree = "<group>"; };
+		C16F8C3256D319567C9AE8E76C84BE5D /* GTimer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = GTimer.m; sourceTree = "<group>"; };
 		C2AB24740EFB9154B38D6FB75B11B0F4 /* Pods-GlobalTimer_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-GlobalTimer_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		C9D4098EDA363EAD66BBBF2B43C089AA /* GEvent.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = GEvent.m; sourceTree = "<group>"; };
 		CB2D15A6CDD781E453929537CE3DDF10 /* Pods-GlobalTimer_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-GlobalTimer_Example-dummy.m"; sourceTree = "<group>"; };
@@ -165,9 +161,7 @@
 				E983BC393B2F0A51B1D8EBA0AF0EFB98 /* GEvent.h */,
 				C9D4098EDA363EAD66BBBF2B43C089AA /* GEvent.m */,
 				27A50ED2D491BF0F2C18C208227351C6 /* GTimer.h */,
-				C16F8C3256D319567C9AE8E76C84BE5D /* GTimer.mm */,
-				AACFEF21202095FC00C0113F /* GCD.cpp */,
-				AACFEF22202095FC00C0113F /* GCD.hpp */,
+				C16F8C3256D319567C9AE8E76C84BE5D /* GTimer.m */,
 			);
 			name = GTimer;
 			path = GlobalTimer/Classes/GTimer;
@@ -252,7 +246,6 @@
 				B3D526C067514305A96D1713F072AADC /* GlobalTimer-umbrella.h in Headers */,
 				86B4564296171094A30FE8F388545E6A /* GlobalTimer.h in Headers */,
 				0212C37606097BD4B82BDEE4493D81F1 /* GTimer.h in Headers */,
-				AACFEF24202095FC00C0113F /* GCD.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -326,7 +319,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0830;
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0920;
 			};
 			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -354,8 +347,7 @@
 			files = (
 				570F2D738B1C29C68C46E94887DC1271 /* GEvent.m in Sources */,
 				21DD915922DEB411072F56A6AF1ED1F2 /* GlobalTimer-dummy.m in Sources */,
-				AACFEF23202095FC00C0113F /* GCD.cpp in Sources */,
-				CACAC14F4B50A388C1403A30E90F1574 /* GTimer.mm in Sources */,
+				CACAC14F4B50A388C1403A30E90F1574 /* GTimer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -397,7 +389,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -405,14 +399,20 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGNING_REQUIRED = NO;
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"POD_CONFIGURATION_RELEASE=1",
 					"$(inherited)",
@@ -651,7 +651,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -659,15 +661,21 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGNING_REQUIRED = NO;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"POD_CONFIGURATION_DEBUG=1",
