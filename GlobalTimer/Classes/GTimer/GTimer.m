@@ -268,7 +268,10 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
         [tempEvents enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(GEvent * _Nonnull event, NSUInteger idx, BOOL * _Nonnull stop) {
             gtstrongify(self);
             if (fmod(self.indexInterval - event.creatAt, event.interval) == 0.0 && event.isActive == YES) {
-                event.block(event.userinfo);
+                dispatch_queue_t blockqueue = dispatch_queue_create("queue", DISPATCH_QUEUE_CONCURRENT);
+                dispatch_async(blockqueue, ^{
+                    event.block(event.userinfo);
+                });
             }
         }];
         if (self.indexInterval > [self lcmInterval]) {
