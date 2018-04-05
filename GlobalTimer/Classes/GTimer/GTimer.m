@@ -155,19 +155,23 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
     [self updateDefaultTimeIntervalIfNeeded];
 }
 
-- (void)updateEventWith: (NSString  * _Nonnull )identifirer timeInterval: (NSTimeInterval)interval repeat:(BOOL)repeat block:(GTBlock _Nonnull )block userinfo:(NSDictionary * _Nullable)userinfo {
+- (void)updateEventWith: (NSString  * _Nonnull )identifirer timeInterval: (NSTimeInterval)interval {
+    [self updateEventWith:identifirer timeInterval:interval repeat:YES block:nil userinfo:nil];
+}
+
+
+- (void)updateEventWith: (NSString  * _Nonnull )identifirer timeInterval: (NSTimeInterval)interval repeat:(BOOL)repeat block:(GTBlock _Nullable )block userinfo:(NSDictionary * _Nullable)userinfo {
     NSArray<GEvent *> *tempEvents = [self.events copy];
     for (GEvent *event in tempEvents) {
         if ([event.identifirer isEqualToString:identifirer]) {
-            event.interval = interval;
+            event.interval = interval != 0 ? interval : event.interval;
             event.repeat = repeat;
-            event.block = block;
-            event.userinfo = userinfo;
+            event.block = block != nil ? block : event.block;
+            event.userinfo = userinfo != nil ? userinfo : event.userinfo;
         }
     }
     [self updateDefaultTimeIntervalIfNeeded];
 }
-
 
 - (void)activeEventWith:(NSString *)identifirer {
     LOCK(

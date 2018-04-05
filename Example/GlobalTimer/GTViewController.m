@@ -31,6 +31,7 @@
     [[GTimer shared] scheduledWith:@"second" timeInterval:3 repeat:YES block:^(NSDictionary *userinfo) {
         NSLog(@"🌹%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
     } userinfo:@{@"cnkcq": @"king"}];
+
 //    [[GTimer shared] scheduledWith:@"dog" timeInterval:6 repeat:YES block:^(NSDictionary *userinfo) {
 //        NSLog(@"🐶%@", userinfo[@"dog"]);
 //    } userinfo:@{@"dog": @"旺财"}];
