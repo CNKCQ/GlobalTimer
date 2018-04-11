@@ -31,10 +31,10 @@ __strong typeof(var) var = gtweak_##var; \
 _Pragma("clang diagnostic pop")
 
 #define LOCK(...)  do {\
-                        dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);\
-                        __VA_ARGS__;\
-                        dispatch_semaphore_signal(_lock);\
-                      } while (0);
+dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);\
+__VA_ARGS__;\
+dispatch_semaphore_signal(_lock);\
+} while (0);
 
 // Function to return gcd of a and b
 NSTimeInterval gcd(NSTimeInterval a, NSTimeInterval b)
@@ -139,19 +139,23 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
 }
 
 - (void)scheduledWith: (NSString *)identifirer timeInterval: (NSTimeInterval)interval repeat:(BOOL)repeat block:(GTBlock)block userinfo:(NSDictionary *)userinfo {
-    dispatch_async(self.privateConcurrentQueue, ^{
-        block(userinfo);
-    });
-    if (!repeat) {
-        return;
+    @autoreleasepool {
+        LOCK(
+             dispatch_async(self.privateConcurrentQueue, ^{
+                block(userinfo);
+            });
+             if (!repeat) {
+                 return;
+             }
+             GEvent *event = [GEvent eventWith:identifirer];
+             event.interval = interval;
+             event.creatAt = self.indexInterval;
+             event.block = block;
+             event.userinfo = userinfo;
+             event.repeat = repeat;
+             [self.events addObject:event]
+        );
     }
-    GEvent *event = [GEvent eventWith:identifirer];
-    event.interval = interval;
-    event.creatAt = self.indexInterval;
-    event.block = block;
-    event.userinfo = userinfo;
-    event.repeat = repeat;
-    LOCK([self.events addObject:event]);
     [self updateDefaultTimeIntervalIfNeeded];
 }
 
@@ -161,15 +165,17 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
 
 
 - (void)updateEventWith: (NSString  * _Nonnull )identifirer timeInterval: (NSTimeInterval)interval repeat:(BOOL)repeat block:(GTBlock _Nullable )block userinfo:(NSDictionary * _Nullable)userinfo {
-    NSArray<GEvent *> *tempEvents = [self.events copy];
-    for (GEvent *event in tempEvents) {
-        if ([event.identifirer isEqualToString:identifirer]) {
-            event.interval = interval != 0 ? interval : event.interval;
-            event.repeat = repeat;
-            event.block = block != nil ? block : event.block;
-            event.userinfo = userinfo != nil ? userinfo : event.userinfo;
-        }
-    }
+    LOCK(
+         NSArray<GEvent *> *tempEvents = [self.events copy];
+         for (GEvent *event in tempEvents) {
+             if ([event.identifirer isEqualToString:identifirer]) {
+                 event.interval = interval != 0 ? interval : event.interval;
+                 event.repeat = repeat;
+                 event.block = block != nil ? block : event.block;
+                 event.userinfo = userinfo != nil ? userinfo : event.userinfo;
+             }
+         }
+    );
     [self updateDefaultTimeIntervalIfNeeded];
 }
 
@@ -213,7 +219,7 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
         LOCK(
              self.defaultTimeInterval = gcdInterval;
              [self resetTimer];
-        );
+             );
     }
 }
 
@@ -267,7 +273,8 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
         return;
     }
     @autoreleasepool {
-        LOCK(self.indexInterval += self.defaultTimeInterval;);        NSArray<GEvent *> *tempEvents = [self.events copy];
+        LOCK(self.indexInterval += self.defaultTimeInterval;);
+        NSArray<GEvent *> *tempEvents = [self.events copy];
         gtweakify(self);
         [tempEvents enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(GEvent * _Nonnull event, NSUInteger idx, BOOL * _Nonnull stop) {
             gtstrongify(self);
@@ -311,3 +318,4 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
 }
 
 @end
+
