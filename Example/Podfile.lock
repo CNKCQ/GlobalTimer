@@ -1,5 +1,5 @@
 PODS:
-  - GlobalTimer (0.1.2)
+  - GlobalTimer (0.1.4)
 
 DEPENDENCIES:
   - GlobalTimer (from `../`)
@@ -9,8 +9,8 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  GlobalTimer: 9fa55bf07fac2dc92dd3c29f780cfac54457b09e
+  GlobalTimer: 82b7d3a70d45af5761d2dc6583c7ea03382f76a9
 
 PODFILE CHECKSUM: af4182f92cc2bbc7a8d13ce05148fa1dea1013db
 
-COCOAPODS: 1.3.1
+COCOAPODS: 1.3.0

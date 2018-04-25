@@ -28,6 +28,7 @@
         sleep(10);
         NSLog(@"🌺%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
     } userinfo:@{@"cnkcq": @"king"}];
+    
     [[GTimer shared] scheduledWith:@"second" timeInterval:3 repeat:YES block:^(NSDictionary *userinfo) {
         NSLog(@"🌹%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
     } userinfo:@{@"cnkcq": @"king"}];

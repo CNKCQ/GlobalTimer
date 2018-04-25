@@ -141,10 +141,16 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
 - (void)scheduledWith: (NSString *)identifirer timeInterval: (NSTimeInterval)interval repeat:(BOOL)repeat block:(GTBlock)block userinfo:(NSDictionary *)userinfo {
     @autoreleasepool {
         LOCK(
+             NSArray<GEvent *> *tempEvents = [self.events copy];
+             [tempEvents enumerateObjectsUsingBlock:^(GEvent * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            NSString *desc = [NSString stringWithFormat:@"Duplicate rawValue definition for identifirer '%@'", identifirer];
+            NSAssert(obj.identifirer != identifirer,desc);
+        }];
              dispatch_async(self.privateConcurrentQueue, ^{
-                block(userinfo);
-            });
+            block(userinfo);
+        });
              if (!repeat) {
+                 
                  return;
              }
              GEvent *event = [GEvent eventWith:identifirer];
@@ -154,7 +160,7 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
              event.userinfo = userinfo;
              event.repeat = repeat;
              [self.events addObject:event]
-        );
+             );
     }
     [self updateDefaultTimeIntervalIfNeeded];
 }
@@ -175,7 +181,7 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
                  event.userinfo = userinfo != nil ? userinfo : event.userinfo;
              }
          }
-    );
+         );
     [self updateDefaultTimeIntervalIfNeeded];
 }
 
@@ -187,7 +193,7 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
                  event.isActive = YES;
              }
          }
-    );
+         );
 }
 
 - (void)pauseEventWith:(NSString *)identifirer {
@@ -198,7 +204,7 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
                  event.isActive = NO;
              }
          }
-    );
+         );
 }
 
 - (void)removeEventWith:(NSString *)identifirer {
@@ -209,7 +215,7 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
                  [self.events removeObject:event];
              }
          }
-    );
+         );
     [self updateDefaultTimeIntervalIfNeeded];
 }
 
@@ -318,4 +324,7 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
 }
 
 @end
+
+
+
 

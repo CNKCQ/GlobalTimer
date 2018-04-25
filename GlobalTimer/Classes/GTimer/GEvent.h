@@ -31,3 +31,5 @@ typedef void(^GTBlock)(NSDictionary *userinfo);
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
+
+
