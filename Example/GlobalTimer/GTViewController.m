@@ -24,7 +24,7 @@
 //        NSLog(@"🇺🇸%@", userinfo[@"test"]);
 //    } userinfo:@{@"test": @"ok"}];
 
-    [[GTimer shared] scheduledWith:@"second" timeInterval:3 repeat:YES block:^(NSDictionary *userinfo) {
+    [[GTimer shared] scheduledWith:@"second" timeInterval:4 repeat:YES block:^(NSDictionary *userinfo) {
         sleep(10);
         NSLog(@"🌺%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
     } userinfo:@{@"cnkcq": @"king"}];
@@ -32,6 +32,11 @@
     [[GTimer shared] scheduledWith:@"second" timeInterval:3 repeat:YES block:^(NSDictionary *userinfo) {
         NSLog(@"🌹%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
     } userinfo:@{@"cnkcq": @"king"}];
+
+    [[GTimer shared] scheduledWith:@"secondfk" timeInterval:8 repeat:YES block:^(NSDictionary *userinfo) {
+        NSLog(@"🇺🇸%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
+    } userinfo:@{@"cnkcq": @"king"}];
+
 
 //    [[GTimer shared] scheduledWith:@"dog" timeInterval:6 repeat:YES block:^(NSDictionary *userinfo) {
 //        NSLog(@"🐶%@", userinfo[@"dog"]);

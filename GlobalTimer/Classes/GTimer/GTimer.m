@@ -46,7 +46,7 @@ NSTimeInterval gcd(NSTimeInterval a, NSTimeInterval b)
 
 // Function to find gcd of array of
 // numbers
-NS_INLINE NSTimeInterval findGCD(NSTimeInterval arr[], int n)
+NS_INLINE NSTimeInterval findGCD(NSTimeInterval arr[], NSUInteger n)
 {
     int result = arr[0];
     for (int i=1; i<n; i++)
@@ -63,7 +63,7 @@ NSTimeInterval lcm(NSTimeInterval a, NSTimeInterval b)
 
 // Function to find lcm of array of
 // numbers
-NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
+NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], NSUInteger n)
 {
     int result = arr[0];
     for (int i=1; i<n; i++)
@@ -142,15 +142,26 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
     @autoreleasepool {
         LOCK(
              NSArray<GEvent *> *tempEvents = [self.events copy];
-             [tempEvents enumerateObjectsUsingBlock:^(GEvent * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            NSString *desc = [NSString stringWithFormat:@"Duplicate rawValue definition for identifirer '%@'", identifirer];
-            NSAssert(obj.identifirer != identifirer,desc);
-        }];
+             BOOL shouldSkip = NO;
+             for(GEvent *obj in tempEvents) {
+#ifdef DEBUG
+                 NSString *desc = [NSString stringWithFormat:@"Duplicate rawValue definition for identifirer '%@'", identifirer];
+                 NSAssert(obj.identifirer != identifirer, desc);
+#else
+                 shouldSkip = obj.identifirer == identifirer;
+                 if (shouldSkip == YES) {
+                     break;
+                 }
+#endif
+             }
+             if (shouldSkip == YES) {
+                 dispatch_semaphore_signal(_lock);
+                 return;
+             };
              dispatch_async(self.privateConcurrentQueue, ^{
-            block(userinfo);
-        });
+                block(userinfo);
+            });
              if (!repeat) {
-                 
                  return;
              }
              GEvent *event = [GEvent eventWith:identifirer];
@@ -231,8 +242,8 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
 
 - (NSTimeInterval)gcdInterval {
     NSArray<GEvent *> *tempEvents = [self.events copy];
-    int count = (int)[tempEvents count];
-    NSTimeInterval intervals[count];
+    NSUInteger count = [tempEvents count];
+    NSTimeInterval intervals[sizeof(NSTimeInterval)*count];
     for (int i = 0; i < tempEvents.count; i++) {
         intervals[i] = tempEvents[i].interval;
     }
@@ -241,9 +252,9 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
 
 - (NSTimeInterval)lcmInterval {
     NSArray<GEvent *> *tempEvents = [self.events copy];
-    int count = (int)[tempEvents count];
-    NSTimeInterval intervals[count];
-    for (int i = 0; i < tempEvents.count; i++) {
+    NSUInteger count = [tempEvents count];
+    NSTimeInterval intervals[sizeof(NSTimeInterval)*count];
+    for (NSUInteger i = 0; i < tempEvents.count; i++) {
         intervals[i] = tempEvents[i].interval;
     }
     return findLCM(intervals, count);
@@ -324,6 +335,7 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], int n)
 }
 
 @end
+
 
 
 
