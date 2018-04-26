@@ -20,25 +20,33 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     // will spend 0.1 mb memory
-//    [[GTimer shared] scheduledWith:@"first" timeInterval:12 repeat:YES block:^(NSDictionary *userinfo) {
-//        NSLog(@"🇺🇸%@", userinfo[@"test"]);
-//    } userinfo:@{@"test": @"ok"}];
-
-    [[GTimer shared] scheduledWith:@"second" timeInterval:4 repeat:YES block:^(NSDictionary *userinfo) {
-        sleep(10);
-        NSLog(@"🌺%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
-    } userinfo:@{@"cnkcq": @"king"}];
     
-    [[GTimer shared] scheduledWith:@"second" timeInterval:3 repeat:YES block:^(NSDictionary *userinfo) {
-        NSLog(@"🌹%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
-    } userinfo:@{@"cnkcq": @"king"}];
+    UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(100, 120, 50, 30)];
+    [button setBackgroundColor:[UIColor redColor]];
+    [button addTarget:self action:@selector(test) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:button];
+    
+    [[GTimer shared] scheduledWith:@"first" timeInterval:2 repeat:YES block:^(NSDictionary *userinfo) {
+        NSLog(@"🇺🇸%@", userinfo[@"test"]);
+    } userinfo:@{@"test": @"ok"}];
+    
+    [self performSelector:@selector(test) withObject:nil afterDelay:2];
 
-    [[GTimer shared] scheduledWith:@"secondfk" timeInterval:8 repeat:YES block:^(NSDictionary *userinfo) {
-        NSLog(@"🇺🇸%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
-    } userinfo:@{@"cnkcq": @"king"}];
+//    [[GTimer shared] scheduledWith:@"second" timeInterval:6 repeat:YES block:^(NSDictionary *userinfo) {
+//        NSLog(@"🐯%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
+//    } userinfo:@{@"cnkcq": @"king"}];
+    
+    [[GTimer shared] scheduledWith:@"hello" timeInterval:4 repeat:YES block:^(NSDictionary *userinfo) {
+        NSLog(@"🌺%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
+    } userinfo:@{}];
+    
+
+//    [[GTimer shared] scheduledWith:@"secondfk" timeInterval:9 repeat:YES block:^(NSDictionary *userinfo) {
+//        NSLog(@"🇺🇸%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
+//    } userinfo:@{@"cnkcq": @"king"}];
 
 
-//    [[GTimer shared] scheduledWith:@"dog" timeInterval:6 repeat:YES block:^(NSDictionary *userinfo) {
+//    [[GTimer shared] scheduledWith:@"dog" timeInterval:8 repeat:YES block:^(NSDictionary *userinfo) {
 //        NSLog(@"🐶%@", userinfo[@"dog"]);
 //    } userinfo:@{@"dog": @"旺财"}];
 //    for (int i = 1; i < 10000; i++) {
@@ -62,6 +70,16 @@
 - (void)activeDog {
     [[GTimer shared] activeEventWith:@"dog"];
     [[GTimer shared] removeEventWith:@"fourth"];
+}
+
+- (void)test {
+//    [[GTimer shared] scheduledWith:@"secondffuc" timeInterval:3 repeat:YES block:^(NSDictionary *userinfo) {
+//        NSLog(@"🚀%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
+//    } userinfo:@{@"cnkcq": @"king"}];
+    [[GTimer shared] scheduledWith:@"seHcond" timeInterval:6 repeat:YES block:^(NSDictionary *userinfo) {
+        NSLog(@"🐯%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
+    } userinfo:@{@"cnkcq": @"king"}];
+
 }
 
 

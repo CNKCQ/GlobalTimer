@@ -14,9 +14,9 @@ typedef void(^GTBlock)(NSDictionary *userinfo);
 
 @property (nonatomic, strong, readonly) NSString *identifirer;
 
-@property (nonatomic, assign) NSTimeInterval interval;
+@property (nonatomic, assign) NSInteger interval;
 
-@property (nonatomic, assign) NSTimeInterval creatAt;
+@property (nonatomic, assign) NSInteger creatAt;
 
 @property (nonatomic, copy) GTBlock block;
 

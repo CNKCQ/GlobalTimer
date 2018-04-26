@@ -9,6 +9,7 @@
 #import "GEvent.h"
 #import <libkern/OSAtomic.h>
 #import <pthread.h>
+#import <math.h>
 
 #if !__has_feature(objc_arc)
 #error GTimer is ARC only. Either turn on ARC for the project or use -fobjc-arc flag
@@ -37,16 +38,16 @@ dispatch_semaphore_signal(_lock);\
 } while (0);
 
 // Function to return gcd of a and b
-NSTimeInterval gcd(NSTimeInterval a, NSTimeInterval b)
+int gcd(int a, int b)
 {
     if (a == 0)
         return b;
-    return gcd(fmod(b, a), a);
+    return gcd(b % a, a);
 }
 
 // Function to find gcd of array of
 // numbers
-NS_INLINE NSTimeInterval findGCD(NSTimeInterval arr[], NSUInteger n)
+NS_INLINE int findGCD(int arr[], NSUInteger n)
 {
     int result = arr[0];
     for (int i=1; i<n; i++)
@@ -55,15 +56,15 @@ NS_INLINE NSTimeInterval findGCD(NSTimeInterval arr[], NSUInteger n)
 }
 
 // Function to return gcd of a and b
-NSTimeInterval lcm(NSTimeInterval a, NSTimeInterval b)
+int lcm(int a, int b)
 {
-    return a*b/gcd(fmod(b, a), a);
+    return a*b/gcd(MIN(a, b), MAX(a, b));
 }
 
 
 // Function to find lcm of array of
 // numbers
-NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], NSUInteger n)
+NS_INLINE int findLCM(int arr[], NSUInteger n)
 {
     int result = arr[0];
     for (int i=1; i<n; i++)
@@ -80,7 +81,7 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], NSUInteger n)
     } _timerFlags;
 }
 
-@property (nonatomic, assign) NSTimeInterval defaultTimeInterval;
+@property (nonatomic, assign) NSInteger defaultTimeInterval;
 
 @property (nonatomic, strong) NSMutableArray<GEvent *> *events;
 
@@ -90,7 +91,7 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], NSUInteger n)
 
 @property (nonatomic, gt_gcd_property_qualifier) dispatch_source_t timer;
 
-@property (nonatomic, assign) NSTimeInterval indexInterval;
+@property (nonatomic, assign) NSInteger indexInterval;
 
 @property (atomic, assign) NSTimeInterval tolerance;
 
@@ -138,7 +139,7 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], NSUInteger n)
     }
 }
 
-- (void)scheduledWith: (NSString *)identifirer timeInterval: (NSTimeInterval)interval repeat:(BOOL)repeat block:(GTBlock)block userinfo:(NSDictionary *)userinfo {
+- (void)scheduledWith: (NSString *)identifirer timeInterval: (NSInteger)interval repeat:(BOOL)repeat block:(GTBlock)block userinfo:(NSDictionary *)userinfo {
     @autoreleasepool {
         LOCK(
              NSArray<GEvent *> *tempEvents = [self.events copy];
@@ -166,7 +167,7 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], NSUInteger n)
              }
              GEvent *event = [GEvent eventWith:identifirer];
              event.interval = interval;
-             event.creatAt = self.indexInterval;
+             event.creatAt = self.indexInterval % interval;
              event.block = block;
              event.userinfo = userinfo;
              event.repeat = repeat;
@@ -176,12 +177,12 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], NSUInteger n)
     [self updateDefaultTimeIntervalIfNeeded];
 }
 
-- (void)updateEventWith: (NSString  * _Nonnull )identifirer timeInterval: (NSTimeInterval)interval {
+- (void)updateEventWith: (NSString  * _Nonnull )identifirer timeInterval: (NSInteger)interval {
     [self updateEventWith:identifirer timeInterval:interval repeat:YES block:nil userinfo:nil];
 }
 
 
-- (void)updateEventWith: (NSString  * _Nonnull )identifirer timeInterval: (NSTimeInterval)interval repeat:(BOOL)repeat block:(GTBlock _Nullable )block userinfo:(NSDictionary * _Nullable)userinfo {
+- (void)updateEventWith: (NSString  * _Nonnull )identifirer timeInterval: (NSInteger)interval repeat:(BOOL)repeat block:(GTBlock _Nullable )block userinfo:(NSDictionary * _Nullable)userinfo {
     LOCK(
          NSArray<GEvent *> *tempEvents = [self.events copy];
          for (GEvent *event in tempEvents) {
@@ -215,7 +216,7 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], NSUInteger n)
                  event.isActive = NO;
              }
          }
-         );
+        );
 }
 
 - (void)removeEventWith:(NSString *)identifirer {
@@ -231,31 +232,31 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], NSUInteger n)
 }
 
 - (void)updateDefaultTimeIntervalIfNeeded {
-    NSTimeInterval gcdInterval = [self gcdInterval];
-    if (self.defaultTimeInterval != gcdInterval) {
-        LOCK(
-             self.defaultTimeInterval = gcdInterval;
-             [self resetTimer];
-             );
-    }
+//    int gcdInterval = [self gcdInterval];
+//    if (self.defaultTimeInterval != gcdInterval) {
+//        LOCK(
+//             self.defaultTimeInterval = gcdInterval;
+//             [self resetTimer];
+//            );
+    //    } // TODO: TEST
 }
 
-- (NSTimeInterval)gcdInterval {
+- (int)gcdInterval {
     NSArray<GEvent *> *tempEvents = [self.events copy];
     NSUInteger count = [tempEvents count];
-    NSTimeInterval intervals[sizeof(NSTimeInterval)*count];
+    int intervals[sizeof(int)*count];
     for (int i = 0; i < tempEvents.count; i++) {
-        intervals[i] = tempEvents[i].interval;
+        intervals[i] = (int)tempEvents[i].interval;
     }
     return findGCD(intervals, count);
 }
 
-- (NSTimeInterval)lcmInterval {
+- (int)lcmInterval {
     NSArray<GEvent *> *tempEvents = [self.events copy];
     NSUInteger count = [tempEvents count];
-    NSTimeInterval intervals[sizeof(NSTimeInterval)*count];
+    int intervals[sizeof(int)*count];
     for (NSUInteger i = 0; i < tempEvents.count; i++) {
-        intervals[i] = tempEvents[i].interval;
+        intervals[i] = (int)tempEvents[i].interval;
     }
     return findLCM(intervals, count);
 }
@@ -297,13 +298,14 @@ NS_INLINE NSTimeInterval findLCM(NSTimeInterval arr[], NSUInteger n)
             gtstrongify(self);
             dispatch_queue_t blockqueue = dispatch_queue_create("globalTimer-queue", DISPATCH_QUEUE_CONCURRENT);
             dispatch_async(blockqueue, ^{
-                if (fmod(self.indexInterval - event.creatAt, event.interval) == 0.0 && event.isActive == YES) {
+                BOOL executeable = event.interval != 0 && (self.indexInterval - event.creatAt) % event.interval == 0 && event.isActive == YES && event.block != nil;
+                if (executeable) {
                     event.block(event.userinfo);
                 }
             });
         }];
-        if (self.indexInterval > [self lcmInterval]) {
-            LOCK(self.indexInterval = fmod(self.indexInterval, [self lcmInterval]));
+        if (self.indexInterval > [self lcmInterval] && [self lcmInterval] != 0) {
+            LOCK(self.indexInterval = self.indexInterval % [self lcmInterval]);
         }
     }
 }

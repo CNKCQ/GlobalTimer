@@ -27,8 +27,17 @@
     if (self) {
         self.repeat = YES;
         self.isActive = YES;
+        self.creatAt = 0;
+        self.interval = 0;
+        self.userinfo = @{};
     }
     return self;
+}
+
+- (void)setCreatAt:(NSInteger)creatAt {
+    if (creatAt) {
+        _creatAt = creatAt;
+    }
 }
 
 @end

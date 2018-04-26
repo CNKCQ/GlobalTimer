@@ -26,7 +26,7 @@
  @param block the `block` that would been called
  @param userinfo the specified params
  */
-- (void)scheduledWith: (NSString  * _Nonnull )identifirer timeInterval: (NSTimeInterval)interval repeat:(BOOL)repeat block:(GTBlock _Nonnull )block userinfo:(NSDictionary * _Nullable)userinfo;
+- (void)scheduledWith: (NSString  * _Nonnull )identifirer timeInterval: (NSInteger)interval repeat:(BOOL)repeat block:(GTBlock _Nonnull )block userinfo:(NSDictionary * _Nullable)userinfo;
 
 /**
  update an event with the specified params.
@@ -37,7 +37,7 @@
  @param block the `block` that would been called
  @param userinfo the specified params
  */
-- (void)updateEventWith: (NSString  * _Nonnull )identifirer timeInterval: (NSTimeInterval)interval repeat:(BOOL)repeat block:(GTBlock _Nullable)block userinfo:(NSDictionary * _Nullable)userinfo;
+- (void)updateEventWith: (NSString  * _Nonnull )identifirer timeInterval: (NSInteger)interval repeat:(BOOL)repeat block:(GTBlock _Nullable)block userinfo:(NSDictionary * _Nullable)userinfo;
 
 /**
  update an event with the specified params.
@@ -45,7 +45,7 @@
  @param identifirer a flag of the event
  @param interval time interval for the loop event
  */
-- (void)updateEventWith: (NSString  * _Nonnull )identifirer timeInterval: (NSTimeInterval)interval;
+- (void)updateEventWith: (NSString  * _Nonnull )identifirer timeInterval: (NSInteger)interval;
 
 /**
  pause an event with the specified flag.
