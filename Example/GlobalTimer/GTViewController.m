@@ -27,6 +27,7 @@
     [self.view addSubview:button];
     
     [[GTimer shared] scheduledWith:@"first" timeInterval:2 repeat:YES block:^(NSDictionary *userinfo) {
+        [NSThread sleepForTimeInterval:100];
         NSLog(@"🇺🇸%@", userinfo[@"test"]);
     } userinfo:@{@"test": @"ok"}];
     
@@ -40,6 +41,20 @@
         NSLog(@"🌺%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
     } userinfo:@{}];
     
+    [[GTimer shared] scheduledWith:@"seHcond" timeInterval:6 repeat:YES block:^(NSDictionary *userinfo) {
+        NSInteger i = 0;
+        while (i < 2) {
+            NSString *blockqueueName = [NSString stringWithFormat:@"com.globaltimer.test.%.f", [self randomFloatBetween:0 andLargerFloat:100000.0]];
+            dispatch_queue_t blockqueue = dispatch_queue_create([blockqueueName cStringUsingEncoding:NSASCIIStringEncoding], DISPATCH_QUEUE_CONCURRENT);
+            dispatch_async(blockqueue, ^{
+                [[GTimer shared] scheduledWith:blockqueueName timeInterval:4 repeat:YES block:^(NSDictionary *userinfo) {
+                    NSLog(@"🌺%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
+                } userinfo:@{}];
+            });
+            i++;
+        }
+    } userinfo:@{@"cnkcq": @"king"}];
+
 
 //    [[GTimer shared] scheduledWith:@"secondfk" timeInterval:9 repeat:YES block:^(NSDictionary *userinfo) {
 //        NSLog(@"🇺🇸%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
@@ -54,6 +69,7 @@
 //            NSLog(@"🐱%@", userinfo[@"cat"]);
 //        } userinfo:@{@"cat": @"咪咪"}];
 //    }
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -76,17 +92,25 @@
 //    [[GTimer shared] scheduledWith:@"secondffuc" timeInterval:3 repeat:YES block:^(NSDictionary *userinfo) {
 //        NSLog(@"🚀%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
 //    } userinfo:@{@"cnkcq": @"king"}];
-    [[GTimer shared] scheduledWith:@"seHcond" timeInterval:6 repeat:YES block:^(NSDictionary *userinfo) {
-        NSLog(@"🐯%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
-    } userinfo:@{@"cnkcq": @"king"}];
+    NSInteger i = 0;
+    while (i < 10) {
+        [[GTimer shared] scheduledWith:@"seHcond" timeInterval:6 repeat:YES block:^(NSDictionary *userinfo) {
+            NSLog(@"🐯%@--%@", userinfo[@"cnkcq"], [NSThread currentThread]);
+        } userinfo:@{@"cnkcq": @"king"}];
+        i++;
+    }
 
 }
 
-
-- (void)didReceiveMemoryWarning
+-(float)randomFloatBetween:(float)num1 andLargerFloat:(float)num2
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    int startVal = num1*10000;
+    int endVal = num2*10000;
+    
+    int randomValue = startVal +(arc4random()%(endVal - startVal));
+    float a = randomValue;
+    
+    return(a /10000.0);
 }
 
 @end

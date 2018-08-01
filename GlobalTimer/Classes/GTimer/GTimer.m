@@ -145,15 +145,15 @@ NS_INLINE int findLCM(int arr[], NSUInteger n)
              NSArray<GEvent *> *tempEvents = [self.events copy];
              BOOL shouldSkip = NO;
              for(GEvent *obj in tempEvents) {
-#ifdef DEBUG
-                 NSString *desc = [NSString stringWithFormat:@"Duplicate rawValue definition for identifirer '%@'", identifirer];
-                 NSAssert(obj.identifirer != identifirer, desc);
-#else
+//#ifdef DEBUG
+//                 NSString *desc = [NSString stringWithFormat:@"Duplicate rawValue definition for identifirer '%@'", identifirer];
+//                 NSAssert(obj.identifirer != identifirer, desc);
+//#else
                  shouldSkip = obj.identifirer == identifirer;
                  if (shouldSkip == YES) {
                      break;
                  }
-#endif
+//#endif
              }
              if (shouldSkip == YES) {
                  dispatch_semaphore_signal(_lock);
@@ -296,7 +296,8 @@ NS_INLINE int findLCM(int arr[], NSUInteger n)
         gtweakify(self);
         [tempEvents enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(GEvent * _Nonnull event, NSUInteger idx, BOOL * _Nonnull stop) {
             gtstrongify(self);
-            dispatch_queue_t blockqueue = dispatch_queue_create("globalTimer-queue", DISPATCH_QUEUE_CONCURRENT);
+            NSString *blockqueueName = [NSString stringWithFormat:@"com.globaltimer.%@", event.identifirer];
+            dispatch_queue_t blockqueue = dispatch_queue_create([blockqueueName cStringUsingEncoding:NSASCIIStringEncoding], DISPATCH_QUEUE_CONCURRENT);
             dispatch_async(blockqueue, ^{
                 BOOL executeable = event.interval != 0 && (self.indexInterval - event.creatAt) % event.interval == 0 && event.isActive == YES && event.block != nil;
                 if (executeable) {
