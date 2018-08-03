@@ -9,7 +9,7 @@
 
 @interface GEvent()
 
-@property (nonatomic, strong) NSString *identifirer;
+@property (nonatomic, copy) NSString *identifirer;
 
 @end
 

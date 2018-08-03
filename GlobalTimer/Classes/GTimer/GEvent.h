@@ -12,7 +12,7 @@
 
 typedef void(^GTBlock)(NSDictionary *userinfo);
 
-@property (nonatomic, strong, readonly) NSString *identifirer;
+@property (nonatomic, copy, readonly) NSString *identifirer;
 
 @property (nonatomic, assign) NSInteger interval;
 
@@ -22,7 +22,7 @@ typedef void(^GTBlock)(NSDictionary *userinfo);
 
 @property (nonatomic, assign) BOOL repeat;
 
-@property (nonatomic, strong) NSDictionary *userinfo;
+@property (nonatomic, copy) NSDictionary *userinfo;
 
 @property (nonatomic, assign) BOOL isActive;
 

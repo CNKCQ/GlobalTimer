@@ -27,7 +27,6 @@
     [self.view addSubview:button];
     
     [[GTimer shared] scheduledWith:@"first" timeInterval:2 repeat:YES block:^(NSDictionary *userinfo) {
-        [NSThread sleepForTimeInterval:100];
         NSLog(@"🇺🇸%@", userinfo[@"test"]);
     } userinfo:@{@"test": @"ok"}];
     
