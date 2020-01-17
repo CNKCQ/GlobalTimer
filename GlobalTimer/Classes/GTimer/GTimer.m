@@ -37,6 +37,7 @@ __VA_ARGS__;\
 dispatch_semaphore_signal(_lock);\
 } while (0);
 
+
 // Function to return gcd of a and b
 int gcd(int a, int b)
 {
@@ -71,7 +72,6 @@ NS_INLINE int findLCM(int arr[], NSUInteger n)
     result = lcm(arr[i], result);
     return result;
 }
-
 
 @interface GTimer()
 {
@@ -146,7 +146,6 @@ NS_INLINE int findLCM(int arr[], NSUInteger n)
         pthread_mutex_lock(&pLock);
         NSArray<GEvent *> *tempEvents = [self.events copy];
         BOOL shouldSkip = NO;
-        pthread_mutex_unlock(&pLock);
         for(GEvent *obj in tempEvents) {
             //#ifdef DEBUG
             //                 NSString *desc = [NSString stringWithFormat:@"Duplicate rawValue definition for identifirer '%@'", identifirer];
@@ -167,7 +166,6 @@ NS_INLINE int findLCM(int arr[], NSUInteger n)
         if (!repeat) {
             return;
         }
-        pthread_mutex_lock(&pLock);
         GEvent *event = [GEvent eventWith:identifirer];
         event.interval = interval;
         event.creatAt = self.indexInterval % interval;
@@ -176,7 +174,6 @@ NS_INLINE int findLCM(int arr[], NSUInteger n)
         event.repeat = repeat;
         [self.events addObject:event];
         pthread_mutex_unlock(&pLock);
-        
     }
 }
 
@@ -188,7 +185,6 @@ NS_INLINE int findLCM(int arr[], NSUInteger n)
 - (void)updateEventWith: (NSString  * _Nonnull )identifirer timeInterval: (NSInteger)interval repeat:(BOOL)repeat block:(GTBlock _Nullable )block userinfo:(NSDictionary * _Nullable)userinfo {
     pthread_mutex_lock(&pLock);
     NSArray<GEvent *> *tempEvents = [self.events copy];
-    pthread_mutex_unlock(&pLock);
     for (GEvent *event in tempEvents) {
         if ([event.identifirer isEqualToString:identifirer]) {
             event.interval = interval != 0 ? interval : event.interval;
@@ -197,40 +193,40 @@ NS_INLINE int findLCM(int arr[], NSUInteger n)
             event.userinfo = userinfo != nil ? userinfo : event.userinfo;
         }
     }
+    pthread_mutex_unlock(&pLock);
 }
 
 - (void)activeEventWith:(NSString *)identifirer {
     pthread_mutex_lock(&pLock);
     NSArray<GEvent *> *tempEvents = [self.events copy];
-    pthread_mutex_unlock(&pLock);
     for (GEvent *event in tempEvents) {
         if ([event.identifirer isEqualToString:identifirer]) {
             event.isActive = YES;
         }
     }
-    
+    pthread_mutex_unlock(&pLock);
 }
 
 - (void)pauseEventWith:(NSString *)identifirer {
     pthread_mutex_lock(&pLock);
     NSArray<GEvent *> *tempEvents = [self.events copy];
-    pthread_mutex_unlock(&pLock);
     for (GEvent *event in tempEvents) {
         if ([event.identifirer isEqualToString:identifirer]) {
             event.isActive = NO;
         }
     }
+    pthread_mutex_unlock(&pLock);
 }
 
 - (void)removeEventWith:(NSString *)identifirer {
     pthread_mutex_lock(&pLock);
     NSArray<GEvent *> *tempEvents = [self.events copy];
-    pthread_mutex_unlock(&pLock);
     for (GEvent *event in tempEvents) {
         if ([event.identifirer isEqualToString:identifirer]) {
             [self.events removeObject:event];
         }
     }
+    pthread_mutex_unlock(&pLock);
 }
 
 - (int)gcdInterval {
@@ -238,11 +234,12 @@ NS_INLINE int findLCM(int arr[], NSUInteger n)
     NSArray<GEvent *> *tempEvents = [self.events copy];
     NSUInteger count = [tempEvents count];
     int intervals[sizeof(int)*count];
-    pthread_mutex_unlock(&pLock);
     for (int i = 0; i < tempEvents.count; i++) {
         intervals[i] = (int)tempEvents[i].interval;
     }
-    return findGCD(intervals, count);
+    int gcd = findGCD(intervals, count);
+    pthread_mutex_unlock(&pLock);
+    return gcd;
 }
 
 - (int)lcmInterval {
@@ -250,11 +247,12 @@ NS_INLINE int findLCM(int arr[], NSUInteger n)
     NSArray<GEvent *> *tempEvents = [self.events copy];
     NSUInteger count = [tempEvents count];
     int intervals[sizeof(int)*count];
-    pthread_mutex_unlock(&pLock);
     for (NSUInteger i = 0; i < tempEvents.count; i++) {
         intervals[i] = (int)tempEvents[i].interval;
     }
-    return findLCM(intervals, count);
+    int lcm = findLCM(intervals, count);
+    pthread_mutex_unlock(&pLock);
+    return lcm;
 }
 
 - (void)resetTimer
@@ -272,9 +270,7 @@ NS_INLINE int findLCM(int arr[], NSUInteger n)
 - (void)schedule
 {
     [self resetTimer];
-    gtweakify(self);
     dispatch_source_set_event_handler(self.timer, ^{
-        gtstrongify(self);
         [self fire];
     });
     dispatch_resume(self.timer);
@@ -287,13 +283,11 @@ NS_INLINE int findLCM(int arr[], NSUInteger n)
         return;
     }
     @autoreleasepool {
-        self.indexInterval += self.defaultTimeInterval;
         pthread_mutex_lock(&pLock);
+        self.indexInterval += self.defaultTimeInterval;
         NSArray<GEvent *> *tempEvents = [self.events copy];
         pthread_mutex_unlock(&pLock);
-        gtweakify(self);
         [tempEvents enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(GEvent * _Nonnull event, NSUInteger idx, BOOL * _Nonnull stop) {
-            gtstrongify(self);
             NSString *blockqueueName = [NSString stringWithFormat:@"com.globaltimer.%@", event.identifirer];
             dispatch_queue_t blockqueue = dispatch_queue_create([blockqueueName cStringUsingEncoding:NSASCIIStringEncoding], DISPATCH_QUEUE_CONCURRENT);
             dispatch_async(blockqueue, ^{

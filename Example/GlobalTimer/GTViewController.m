@@ -42,7 +42,7 @@
 //
     [[GTimer shared] scheduledWith:@"seHcond" timeInterval:6 repeat:YES block:^(NSDictionary *userinfo) {
         NSInteger i = 0;
-        while (i < 2000000) {
+        while (i < 200) {
             NSString *blockqueueName = [NSString stringWithFormat:@"com.globaltimer.test.%.f", [self randomFloatBetween:0 andLargerFloat:100000.0]];
             dispatch_queue_t blockqueue = dispatch_queue_create([blockqueueName cStringUsingEncoding:NSASCIIStringEncoding], DISPATCH_QUEUE_CONCURRENT);
             dispatch_async(blockqueue, ^{
